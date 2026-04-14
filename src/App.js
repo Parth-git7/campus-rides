@@ -10,10 +10,13 @@ import { useEffect } from "react"; // accessing database without posting
 import { onAuthStateChanged } from "firebase/auth";
 import toast, { Toaster } from "react-hot-toast";
 
-import { testService } from "./services/rideService";
+// import { testService } from "./services/rideService";// testing only
 import { postRide } from "./services/rideService";
 import { requestRide } from "./services/rideService";
 import { updateRequest } from "./services/rideService";
+import { cancelRequest } from "./services/rideService";
+import { deleteRide } from "./services/rideService";
+import { getMyRides } from "./services/rideService";
 
 import RideCard from "./components/RideCard"; //  import component ridecard
 import RideModal from "./components/RideModal"; // import modal component ride card
@@ -146,45 +149,26 @@ function App() {
 
 
     const handleRequestRide = async (ride) => {
-        try {
-          const docRef = await requestRide({
-            ride,
-            userEmail: user?.email,
-            existingRequests: requests
-          });
+      try {
+        await requestRide({
+          ride,
+          userEmail: user?.email,
+          existingRequests: requests
+        });
 
-          // update UI instantly
-          setRequests((prev) => [
-            ...prev,
-            {
-              id: docRef.id,
-              rideId: ride.id,
-              riderEmail: user?.email,
-              status: "pending"
-            }
-          ]);
+        toast.success("Request sent");
 
-          toast.success("Request sent");
-
-        } catch (error) {
-          toast.error(error.message);
-        }
-      };
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
       const myRequests = requests
         .filter((req) => req.riderEmail === user?.email)
         .slice() //  copy array (important)
         .reverse(); //  newest first
 
       const fetchMyRides = async () => {
-        const querySnapshot = await getDocs(collection(db, "rides"));
-
-        const myRidesArray = querySnapshot.docs
-          .map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))
-          .filter(ride => ride.userEmail === user?.email);
-
+        const myRidesArray = await getMyRides(user?.email);
         setMyRides(myRidesArray);
       };
 
@@ -229,58 +213,45 @@ function App() {
       
 
       const handleDeleteRide = async (rideId) => {
-      try {
+        try {
+          const confirmDelete = window.confirm(
+            "Are you sure you want to delete this ride?"
+          );
 
-        // \ ASK CONFIRMATION
-        const confirmDelete = window.confirm(
-          "Are you sure you want to delete this ride?"
-        );
+          if (!confirmDelete) return;
 
-        // If user clicks Cancel → stop
-        if (!confirmDelete) {
-          return;
+          await deleteRide(rideId);
+
+          toast.success("Ride Deleted");
+
+          fetchRides();
+          fetchMyRides();
+
+        } catch (error) {
+          console.log(error.message);
         }
-        // reference to ride document
-        const rideRef = doc(db, "rides", rideId);
+      };
 
-        // delete from Firestore
-        await deleteDoc(rideRef);
 
-        // alert("Ride deleted 🗑️");
-        toast.success("Ride Deleted 🗑️");
-
-        // 🔄 refresh UI
-        fetchRides();
-        fetchMyRides();
-
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
     
     const handleCancelRequest = async (requestId) => {
       try {
-
-        // confirmation before cancel
         const confirmCancel = window.confirm("Cancel this request?");
+        if (!confirmCancel) return;
 
-        if (!confirmCancel) return; // stop if user cancels
+        await cancelRequest(requestId);
 
-        // 🔥 delete from Firestore
-        await deleteDoc(doc(db, "rideRequests", requestId));
-
-        // 🔥 update UI instantly (IMPORTANT)
+        // update UI instantly
         setRequests((prev) =>
           prev.filter((req) => req.id !== requestId)
         );
 
-        toast.success("Request cancelled"); 
+        toast.success("Request cancelled");
 
       } catch (error) {
         console.log(error.message);
       }
     };
-
 
     const filteredRides = rides.filter((ride) => {
 
@@ -331,9 +302,9 @@ function App() {
         setShowForm(false);
       }, [activeTab]);
 
-      useEffect(() => {
-  testService(); // ✅ runs once on load
-}, []);
+//       useEffect(() => { /////////// testing only /////////
+//   testService(); //  runs once on load
+// }, []);
 
   return (
       

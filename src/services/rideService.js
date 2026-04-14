@@ -2,7 +2,7 @@
 
 // This file will contain all ride-related logic
 import { db } from "../firebase";
-import { doc, collection, addDoc , updateDoc, runTransaction} from "firebase/firestore";
+import { doc, collection, addDoc , updateDoc, deleteDoc, runTransaction, getDocs} from "firebase/firestore";
 
 export const testService = () => {
 //   alert("Service working"); // 🔥 force visible output
@@ -90,44 +90,68 @@ export const testService = () => {
     // update request (accept/reject)
     export const updateRequest = async ({ requestId, newStatus, rideData }) => {
 
-  const requestRef = doc(db, "rideRequests", requestId);
+      const requestRef = doc(db, "rideRequests", requestId);
 
-  // ONLY handle seat logic for accept
-  if (newStatus === "accepted") {
+      // ONLY handle seat logic for accept
+      if (newStatus === "accepted") {
 
-    const rideRef = doc(db, "rides", rideData.id);
+        const rideRef = doc(db, "rides", rideData.id);
 
-    // run transaction FIRST
-    await runTransaction(db, async (transaction) => {
+        // run transaction FIRST
+        await runTransaction(db, async (transaction) => {
 
-      const rideDoc = await transaction.get(rideRef);
+          const rideDoc = await transaction.get(rideRef);
 
-      if (!rideDoc.exists()) {
-        throw new Error("Ride does not exist");
+          if (!rideDoc.exists()) {
+            throw new Error("Ride does not exist");
+          }
+
+          const currentSeats = rideDoc.data().seats;
+
+          if (Number(currentSeats) <= 0) {
+            throw new Error("Ride is full");
+          }
+
+          // reduce seat
+          transaction.update(rideRef, {
+            seats: Number(currentSeats) - 1
+          });
+
+          // ONLY AFTER SUCCESS → update request
+          transaction.update(requestRef, {
+            status: "accepted"
+          });
+
+        });
+
+      } else {
+        // reject case → simple update
+        await updateDoc(requestRef, {
+          status: "rejected"
+        });
       }
+    };
 
-      const currentSeats = rideDoc.data().seats;
+    export const cancelRequest = async (requestId) => {
+      await deleteDoc(doc(db, "rideRequests", requestId));
+    };
 
-      if (Number(currentSeats) <= 0) {
-        throw new Error("Ride is full");
-      }
+    // delete ride
+    export const deleteRide = async (rideId) => {
+      await deleteDoc(doc(db, "rides", rideId));
+    };
 
-      // reduce seat
-      transaction.update(rideRef, {
-        seats: Number(currentSeats) - 1
-      });
+    // fetch rides created by user
+    export const getMyRides = async (userEmail) => {
 
-      // ONLY AFTER SUCCESS → update request
-      transaction.update(requestRef, {
-        status: "accepted"
-      });
+      const querySnapshot = await getDocs(collection(db, "rides"));
 
-    });
+      const myRides = querySnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter(ride => ride.userEmail === userEmail);
 
-  } else {
-    // reject case → simple update
-    await updateDoc(requestRef, {
-      status: "rejected"
-    });
-  }
-};
+      return myRides;
+    };
