@@ -29,6 +29,8 @@ function App() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [branch, setBranch] = useState("");
   const [user, setUser] = useState(null);  //remember user
   const [isSignup, setIsSignup] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -63,20 +65,35 @@ function App() {
 
 
   // sign up function - creating new users 
-  const handleSignup = () => {
-    if (password !== confirmPassword) {
+  const handleSignup = async () => {
+    try {
+      if (password !== confirmPassword) {
         alert("Passwords do not match");
         return;
-    }
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log("Signup success:", userCredential.user);
-        toast.success("Account created ✅");
-      })
-      .catch((error) => {
-        console.log(error.message);
-        toast.error("Sign-Up failed ❌");
+      }
+
+      // create auth user
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const newUser = userCredential.user;
+
+      //store in Firestore
+      await addDoc(collection(db, "users"), {
+        name: name.trim(),
+        branch: branch.trim(),
+        email: newUser.email
       });
+
+      toast.success("Account created ");
+
+    } catch (error) {
+      console.log(error.message) ;
+      toast.error("Sign-Up failed ");
+    }
   };
 
 
@@ -546,6 +563,12 @@ function App() {
                 handleLogin={handleLogin}
                 handleSignup={handleSignup}
                 handleLogout={handleLogout}
+
+                name={name}
+                setName={setName}
+
+                branch={branch}
+                setBranch={setBranch}
               />
             </div>
           )}

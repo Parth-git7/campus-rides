@@ -10,7 +10,11 @@ function AuthForm({
   setIsSignup,
   handleLogin,
   handleSignup,
-  handleLogout
+  handleLogout,
+  name,
+  setName,
+  branch,
+  setBranch
 }) {
 
   // ✔ If user logged in → show profile
@@ -45,9 +49,29 @@ function AuthForm({
         {isSignup ? "Sign Up" : "Login"}
       </h2>
 
+      {isSignup && (
+        <>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-2 mb-3 border rounded bg-white dark:bg-gray-700 dark:text-white"
+        />
+        
+
+          <input
+            type="text"
+            placeholder="Branch (e.g. CSE)"
+            value={branch}
+            onChange={(e) => setBranch(e.target.value)}
+            className="w-full p-2 mb-3 border rounded bg-white dark:bg-gray-700 dark:text-white"
+        />
+        </>
+      )}
       <input 
         type="email"
-        placeholder="Email"
+        placeholder="Chitkara Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)} // ✔ update email
         className="w-full p-2 mb-3 border rounded bg-white dark:bg-gray-700 dark:text-white"
@@ -70,6 +94,7 @@ function AuthForm({
           className="w-full p-2 mb-3 border rounded bg-white dark:bg-gray-700 dark:text-white"
         />
       )}
+      
 
       <button 
         onClick={isSignup ? handleSignup : handleLogin} // ✔ switch action
