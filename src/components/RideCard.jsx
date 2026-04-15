@@ -1,3 +1,5 @@
+import React from 'react';
+
 function RideCard({
   ride,
   user,
@@ -7,101 +9,111 @@ function RideCard({
   handleRequestRide,
   setActiveTab
 }) {
+  const isOwner = ride.userEmail === user?.email;
+  const isFull = Number(ride.seats) <= 0;
+  const isSelected = selectedRide?.id === ride.id;
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 mb-4 border border-gray-200 dark:border-gray-700">
-
-      {/* TOP ROW */}
-      <div className="flex justify-between items-center">
-        <div className="flex gap-3">
-
-          {/* LEFT: DOT LINE */}
-          <div className="flex flex-col items-center">
-            <div className="w-3 h-3 bg-black dark:bg-white rounded-full"></div>
-            <div className="w-[2px] h-6 bg-gray-400"></div>
-            <div className="w-3 h-3 border-2 border-gray-500 rounded-full"></div>
+    <div className={`
+      relative overflow-hidden
+      bg-white dark:bg-gray-800/50 
+      
+      p-6 rounded-3xl 
+      border-2 transition-all duration-300
+      ${isSelected 
+        ? 'border-blue-500 shadow-lg ring-1 ring-blue-500/20' 
+        : 'border-gray-100 dark:border-gray-700/50 shadow-md hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/30'}
+    `}>
+      
+      {/* HEADER: USER & VEHICLE */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner">
+              {ride.userName ? ride.userName[0].toUpperCase() : "U"}
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
           </div>
-
-          {/* RIGHT: TEXT */}
+          
           <div>
-            <p className="font-semibold text-gray-900 dark:text-white">
-              {ride.from}
-            </p>
-            <p className="text-gray-500 text-sm mt-2">
-              {ride.to}
-            </p>
+            <h3 className="text-[15px] font-bold text-gray-900 dark:text-white leading-tight">
+              {ride.userName}
+            </h3>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 mt-1 uppercase tracking-wider">
+              {ride.vehicleName || "-"}
+            </span>
           </div>
-
         </div>
 
-        <p className="text-green-600 font-bold text-lg">
-          ₹{ride.fare}
-        </p>
+        <div className="text-right">
+          <p className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+            <span className="text-sm font-normal text-gray-500 mr-1">₹</span>
+            {ride.fare}
+          </p>
+        </div>
       </div>
 
-      {/* SUB INFO */}
-      <div className="flex justify-between mt-2 text-sm text-gray-600 dark:text-gray-300">
-        <p>🕒 {ride.time}</p>
-        <p>💺 {ride.seats} seats</p>
+      {/* ROUTE SECTION */}
+      <div className="flex gap-4 mb-4 relative">
+        <div className="flex flex-col items-center py-1">
+          <div className="w-2.5 h-2.5 rounded-full border-2 border-blue-600 bg-white dark:bg-gray-800 z-10"></div>
+          <div className="w-0.5 flex-1 bg-gradient-to-b from-blue-600 via-gray-200 dark:via-gray-700 to-gray-300 dark:to-gray-600 my-1"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-600 z-10"></div>
+        </div>
+
+        <div className="flex flex-col justify-between gap-4">
+          <div>
+            <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-bold">Pickup</p>
+            <p className="text-[15px] font-semibold text-gray-800 dark:text-gray-200">{ride.from}</p>
+          </div>
+          <div>
+            <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-bold">Drop-off</p>
+            <p className="text-[15px] font-semibold text-gray-800 dark:text-gray-200">{ride.to}</p>
+          </div>
+        </div>
       </div>
 
-      {/* DRIVER */}
-      <p className="text-xs text-gray-400 mt-2">
-        Posted by: {ride.userEmail}
-      </p>
+      {/* TRIP META INFO */}
+      <div className="grid grid-cols-3 gap-2 py-3 px-4 bg-gray-50 dark:bg-gray-900/40 rounded-2xl mb-5">
+        <div className="flex flex-col items-center border-r border-gray-200 dark:border-gray-700">
+          <span className="text-[10px] text-gray-500 uppercase font-bold">Date</span>
+          <span className="text-xs font-semibold dark:text-gray-300">{ride.date}</span>
+        </div>
+        <div className="flex flex-col items-center border-r border-gray-200 dark:border-gray-700">
+          <span className="text-[10px] text-gray-500 uppercase font-bold">Time</span>
+          <span className="text-xs font-semibold dark:text-gray-300">{ride.time}</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-[10px] text-gray-500 uppercase font-bold">Seats</span>
+          <span className={`text-xs font-bold ${isFull ? 'text-red-500' : 'text-blue-600'}`}>
+            {ride.seats} left
+          </span>
+        </div>
+      </div>
 
       {/* ACTION BUTTONS */}
-      <div className="flex gap-2 mt-4">
-
-        {/* VIEW BUTTON */}
+      <div className="flex gap-3">
         <button 
-          onClick={() => {
-            if (selectedRide?.id === ride.id) {
-              setSelectedRide(null);
-            } else {
-              setSelectedRide(ride);
-            }
-          }}
-          className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded-lg text-sm"
+          onClick={() => setSelectedRide(isSelected ? null : ride)}
+          className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all
+            ${isSelected 
+              ? 'bg-gray-100 dark:bg-black dark:bg-gray-700 text-gray-900 dark:text-white' 
+              : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200 dark:shadow-none'}`}
         >
-          View
+          {isSelected ? 'Close Details' : 'View Details'}
         </button>
 
-        {/* REQUEST BUTTON */}
         <button 
-          onClick={() => {
-            if (!user) {
-              setActiveTab("profile"); // redirect to login
-            } else {
-              handleRequestRide(ride);
-            }
-          }}
-
-          disabled={
-            Number(ride.seats) <= 0 ||
-            ride.userEmail === user?.email ||
-            alreadyRequested
-          }
-
-          className={`flex-1 py-1.5 rounded-lg text-sm ${
-            Number(ride.seats) <= 0 ||
-            ride.userEmail === user?.email ||
-            alreadyRequested
-              ? "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
-              : "bg-green-600 text-white hover:bg-green-700"
-          }`}
+          onClick={() => !user ? setActiveTab("profile") : handleRequestRide(ride)}
+          disabled={isFull || isOwner || alreadyRequested}
+          className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all
+            ${(isFull || isOwner || alreadyRequested)
+              ? "bg-gray-100 dark:bg-black dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed border border-gray-200 dark:border-gray-700"
+              : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-100 dark:shadow-none"
+            }`}
         >
-          {
-            ride.userEmail === user?.email
-              ? "Your Ride"
-              : alreadyRequested
-              ? "Requested"
-              : Number(ride.seats) <= 0
-              ? "Full"
-              : "Request"
-          }
+          {isOwner ? "Owner" : alreadyRequested ? "Requested" : isFull ? "Sold Out" : "Book Seat"}
         </button>
-
       </div>
     </div>
   );

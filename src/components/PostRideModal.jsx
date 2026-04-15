@@ -6,6 +6,10 @@ function PostRideModal({
   setTime,
   setFare,
   setSeats,
+  setDate,
+  setVehicleType,
+  setVehicleName,
+  setVehicleNumber,
   handlePostRide
 }) {
 
@@ -43,9 +47,39 @@ function PostRideModal({
         />
 
         <input 
+          type="date"
+          className="w-full p-2 border rounded mb-2"
+          onChange={(e) => setDate(e.target.value)}
+        />
+
+        <input 
           type="time"
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setTime(e.target.value)}
+        />
+
+        <select
+          className="w-full p-2 border rounded mb-2"
+          onChange={(e) => setVehicleType(e.target.value)}
+        >
+          <option value="">Select Vehicle</option>
+          <option value="car">Car</option>
+          <option value="bike">Bike</option>
+          <option value="scooty">Scooty</option>
+        </select>
+
+        <input 
+          type="text"
+          placeholder="Vehicle Name (e.g. Alto, Scorpio)"
+          className="w-full p-2 border rounded mb-2"
+          onChange={(e) => setVehicleName(e.target.value)}
+        />
+
+        <input 
+          type="text"
+          placeholder="Vehicle Number (e.g. PB01 AK 0992)"
+          className="w-full p-2 border rounded mb-2"
+          onChange={(e) => setVehicleNumber(e.target.value)}
         />
 
         <input   

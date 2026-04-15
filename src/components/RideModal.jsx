@@ -39,9 +39,13 @@ function RideModal({ selectedRide, setSelectedRide, user, setActiveTab }) {
 
         <p><b>From:</b> {selectedRide.from}</p>
         <p><b>To:</b> {selectedRide.to}</p>
+        <p><b>Date:</b> {selectedRide.date}</p>
         <p><b>Time:</b> {selectedRide.time}</p>
         <p><b>Fare:</b> ₹{selectedRide.fare}</p>
         <p><b>Seats:</b> {selectedRide.seats}</p>
+        
+        <p><b>Vehicle:</b> {selectedRide.vehicleType}</p>
+        <p><b>Vehicle No:</b> {selectedRide.vehicleNumber}</p>
         <p className="text-gray-500 mt-1">
           Posted by: {selectedRide.userEmail}
         </p>

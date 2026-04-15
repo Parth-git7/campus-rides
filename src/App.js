@@ -8,6 +8,7 @@ import { collection, addDoc, updateDoc, doc , onSnapshot, getDocs, runTransactio
 import { deleteDoc } from "firebase/firestore";
 import { useEffect } from "react"; // accessing database without posting
 import { onAuthStateChanged } from "firebase/auth";
+
 import toast, { Toaster } from "react-hot-toast";
 
 // import { testService } from "./services/rideService";// testing only
@@ -17,6 +18,7 @@ import { updateRequest } from "./services/rideService";
 import { cancelRequest } from "./services/rideService";
 import { deleteRide } from "./services/rideService";
 import { getMyRides } from "./services/rideService";
+import { getUserProfile } from "./services/userService";
 
 import RideCard from "./components/RideCard"; //  import component ridecard
 import RideModal from "./components/RideModal"; // import modal component ride card
@@ -40,7 +42,11 @@ function App() {
   const [time, setTime] = useState("");
   const [fare, setFare] = useState("");
   const [seats, setSeats] = useState("");
+  const [date, setDate] = useState("");          // ride date
+  const [vehicleType, setVehicleType] = useState(""); // car/bike/scooty
+  const [vehicleName, setVehicleName] = useState("");
   const [rides, setRides] = useState([]);
+  const [vehicleNumber, setVehicleNumber] = useState("");
   const [selectedRide, setSelectedRide] = useState(null);
   const [myRides, setMyRides] = useState([]); // driver dashboard
   const [requests, setRequests] = useState([]); //
@@ -49,6 +55,7 @@ function App() {
   const [searchFrom, setSearchFrom] = useState("");
   const [searchTo, setSearchTo] = useState("");
   const [loading, setLoading] = useState(true); // 
+  const [userProfile, setUserProfile] = useState(null); // stores name, branch etc.
 
   // logging in function for user to login
   const handleLogin = () => {
@@ -119,14 +126,24 @@ function App() {
       const handlePostRide = async () => {
       try {
         if (!user) return;
+        if (!from || !to || !date || !time || !fare || !seats || !vehicleType || !vehicleNumber || !vehicleName) {
+          toast.error("Please fill all fields");
+          return;
+        }
 
         await postRide({
           from,
           to,
+          date,
           time,
           fare,
           seats,
-          userEmail: user.email
+          vehicleType,
+          vehicleNumber,
+          vehicleName,
+          userEmail: user.email,
+          userName: userProfile?.name,    
+          userBranch: userProfile?.branch  
         });
 
         toast.success("Ride posted ✅");
@@ -306,9 +323,19 @@ function App() {
       }, [user]);
 
       useEffect(() => {
-        
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+          
           setUser(currentUser);
+
+          if (currentUser) {
+            // fetch profile from Firestore
+            const profile = await getUserProfile(currentUser.email);
+
+            setUserProfile(profile); // store in state
+          } else {
+            setUserProfile(null);
+          }
+
         });
 
         return () => unsubscribe();
@@ -351,7 +378,7 @@ function App() {
                 />
 
                 {/* RIDES LIST */}
-                <div className="mt-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+                <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700 space-y-5">
                   <div className="flex justify-between items-center mb-3">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                       Available Rides
@@ -370,9 +397,15 @@ function App() {
                       <p>No rides found</p>
                     ) : (
                       filteredRides
-                        .slice()
-                        .reverse()
-                        .map((ride) => {
+                      .slice()
+                      .sort((a, b) => {
+                        // combine date + time
+                        const dateA = new Date(`${a.date} ${a.time}`);
+                        const dateB = new Date(`${b.date} ${b.time}`);
+
+                        return dateB - dateA; // latest first
+                      })
+                      .map((ride) => {
 
                           const alreadyRequested = user
                             ? requests.find(
@@ -425,6 +458,10 @@ function App() {
               setTime={setTime}
               setFare={setFare}
               setSeats={setSeats}
+              setDate={setDate}
+              setVehicleType={setVehicleType}
+              setVehicleName={setVehicleName}
+              setVehicleNumber={setVehicleNumber}
 
               handlePostRide={handlePostRide} // submit logic
             />

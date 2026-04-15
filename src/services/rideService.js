@@ -11,10 +11,23 @@ export const testService = () => {
 
 
 // Post a ride
-    export const postRide = async ({ from, to, time, fare, seats, userEmail }) => {
-
+    export const postRide = async ({
+      from,
+      to,
+      date,
+      time,
+      fare,
+      seats,
+      vehicleNumber,
+      vehicleType,
+      vehicleName,
+      userEmail,
+      userName,
+      userBranch
+    }) => {
+ 
     // validations
-    if (!from || !to || !time || !fare || !seats) {
+    if (!from || !to || !date || !time || !fare || !seats || !vehicleType || !vehicleName || !vehicleNumber) {
         throw new Error("All fields are required");
     }
 
@@ -24,6 +37,7 @@ export const testService = () => {
     if (cleanFrom === cleanTo) {
     throw new Error("From and To cannot be same");
     }
+
 
 
     if (Number(seats) <= 0) {
@@ -36,12 +50,18 @@ export const testService = () => {
 
     // firestore call
     const docRef = await addDoc(collection(db, "rides"), {
-        from : cleanFrom ,
-        to : cleanTo ,
+        from,
+        to,
+        date,
         time,
         fare,
         seats,
-        userEmail
+        vehicleNumber,
+        vehicleName,
+        vehicleType,
+        userEmail,
+        userName,     
+        userBranch    
     });
 
     return docRef;
