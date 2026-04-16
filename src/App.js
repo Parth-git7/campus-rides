@@ -354,10 +354,8 @@ function App() {
       
       <div className="pb-24">
       <div className={darkMode ? "dark" : ""}>
-      <div className="min-h-screen bg-gray-100 dark:bg-black-900 text-black dark:text-white">
-      {/* <div className="flex items-center justify-center min-h-screen bg-gray-100"> */}
-      <div className="bg-gray-100" min-h-screen >
-
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+  
           <Toaster position="top-center" reverseOrder={false} />
           <div className="text-center">
             <div className="text-center">
@@ -378,11 +376,14 @@ function App() {
                 />
 
                 {/* RIDES LIST */}
-                <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700 space-y-5">
+                
+                <div className="mt-6 space-y-5">
+                  <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
                   <div className="flex justify-between items-center mb-3">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
                       Available Rides
                     </h2>
+                    
 
                     {!loading && (
                       <span className="text-sm text-gray-500">
@@ -390,11 +391,13 @@ function App() {
                       </span>
                     )}
                   </div>
-
+                    <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
                   {loading ? (
                       <p>Loading rides...</p>
                     ) : filteredRides.length === 0 ? (
-                      <p>No rides found</p>
+                      <p className="text-gray-500 text-sm text-center py-6">
+                        No rides available right now. Try a different location.
+                      </p>
                     ) : (
                       filteredRides
                       .slice()
@@ -431,6 +434,7 @@ function App() {
                     )}
                 </div>
               </div>
+              
             )}
 
             {/* pop up modal for view details  */}
@@ -618,7 +622,7 @@ function App() {
 
           </div>
 
-      </div>
+      
       </div>
       </div>
       </div>

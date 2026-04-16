@@ -13,6 +13,27 @@ function RideCard({
   const isFull = Number(ride.seats) <= 0;
   const isSelected = selectedRide?.id === ride.id;
 
+  const formatDate = (dateString) => {
+  const date = new Date(dateString);
+
+  const day = date.getDate();
+
+  // add suffix (st, nd, rd, th)
+  const getSuffix = (d) => {
+    if (d > 3 && d < 21) return "th";
+    switch (d % 10) {
+      case 1: return "st";
+      case 2: return "nd";
+      case 3: return "rd";
+      default: return "th";
+    }
+  };
+
+  const month = date.toLocaleString("default", { month: "long" });
+
+  return `${day}${getSuffix(day)} ${month}`;
+};
+
   return (
     <div className={`
       relative overflow-hidden
@@ -24,7 +45,7 @@ function RideCard({
         ? 'border-blue-500 shadow-lg ring-1 ring-blue-500/20' 
         : 'border-gray-100 dark:border-gray-700/50 shadow-md hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/30'}
     `}>
-      
+      <div className="pointer-events-none absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-blue-300/60 to-transparent dark:from-blue-600/30"></div>
       {/* HEADER: USER & VEHICLE */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
@@ -56,9 +77,9 @@ function RideCard({
       {/* ROUTE SECTION */}
       <div className="flex gap-4 mb-4 relative">
         <div className="flex flex-col items-center py-1">
-          <div className="w-2.5 h-2.5 rounded-full border-2 border-blue-600 bg-white dark:bg-gray-800 z-10"></div>
+          <div className="w-2.5 h-2.5 rounded-full border-2 border-blue-600 bg-white dark:bg-gray-800 "></div>
           <div className="w-0.5 flex-1 bg-gradient-to-b from-blue-600 via-gray-200 dark:via-gray-700 to-gray-300 dark:to-gray-600 my-1"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-blue-600 z-10"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-600 "></div>
         </div>
 
         <div className="flex flex-col justify-between gap-4">
@@ -74,21 +95,42 @@ function RideCard({
       </div>
 
       {/* TRIP META INFO */}
-      <div className="grid grid-cols-3 gap-2 py-3 px-4 bg-gray-50 dark:bg-gray-900/40 rounded-2xl mb-5">
-        <div className="flex flex-col items-center border-r border-gray-200 dark:border-gray-700">
-          <span className="text-[10px] text-gray-500 uppercase font-bold">Date</span>
-          <span className="text-xs font-semibold dark:text-gray-300">{ride.date}</span>
-        </div>
-        <div className="flex flex-col items-center border-r border-gray-200 dark:border-gray-700">
-          <span className="text-[10px] text-gray-500 uppercase font-bold">Time</span>
-          <span className="text-xs font-semibold dark:text-gray-300">{ride.time}</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-[10px] text-gray-500 uppercase font-bold">Seats</span>
-          <span className={`text-xs font-bold ${isFull ? 'text-red-500' : 'text-blue-600'}`}>
-            {ride.seats} left
+      <div className="grid grid-cols-3 gap-3 py-3 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl mb-5">
+
+        {/* DATE */}
+        <div className="flex flex-col items-center border-r border-gray-300 dark:border-gray-600 pr-2">
+          <span className="text-[10px] text-gray-600 dark:text-gray-400 uppercase font-semibold tracking-wide">
+            Date
+          </span>
+          <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+            {formatDate(ride.date)}
           </span>
         </div>
+
+        {/* TIME */}
+        <div className="flex flex-col items-center border-r border-gray-300 dark:border-gray-600 pr-2">
+          <span className="text-[10px] text-gray-600 dark:text-gray-400 uppercase font-semibold tracking-wide">
+            Time
+          </span>
+          <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+            {ride.time}
+          </span>
+        </div>
+
+        {/* SEATS */}
+        <div className="flex flex-col items-center">
+          <span className="text-[10px] text-gray-600 dark:text-gray-400 uppercase font-semibold tracking-wide">
+            Seats
+          </span>
+          <span
+            className={`text-sm font-bold ${
+              isFull ? "text-red-500" : "text-green-600"
+            }`}
+          >
+            {isFull ? "Full" : `${ride.seats} left`}
+          </span>
+        </div>
+
       </div>
 
       {/* ACTION BUTTONS */}

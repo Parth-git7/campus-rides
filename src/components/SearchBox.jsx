@@ -10,7 +10,7 @@ function SearchBox({
     return (
         <div className="mb-4 relative">
 
-            {/* 🔒 Overlay for logged out users */}
+            {/* 🔒 Overlay for logged out users
             {!user && (
             <div className="absolute inset-0 bg-white/70 backdrop-blur-[1.5px] z-10 flex items-center justify-center rounded-xl">
                 <div className="text-center">
@@ -23,25 +23,25 @@ function SearchBox({
                 </button>
                 </div>
             </div>
-            )}
+            )} */}
 
             {/* 🔍 Search Container */}
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+            <div className="mt-6 space-y-5">
 
-            <h2 className="text-lg font-semibold mb-3 text-gray-700 dark:text-gray-200">
+            <h2 className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-200">
                 Find a Ride
             </h2>
 
             {/* Inputs */}
             <div className="flex flex-col sm:flex-row gap-2">
-
+                
                 <input
                 type="text"
                 placeholder="From (e.g. Chandigarh)"
                 value={searchFrom}
                 onChange={(e) => setSearchFrom(e.target.value)}
                 className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                disabled={!user}
+                // disabled={!user}
                 />
 
                 <input
@@ -50,7 +50,7 @@ function SearchBox({
                 value={searchTo}
                 onChange={(e) => setSearchTo(e.target.value)}
                 className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                disabled={!user}
+                // disabled={!user}
                 />
 
             </div>

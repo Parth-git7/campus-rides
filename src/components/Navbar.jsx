@@ -1,7 +1,8 @@
 function Navbar({ activeTab, setActiveTab, setShowForm }) {
   return (
+    
     <div className="fixed bottom-0 left-0 right-0 
-      bg-white dark:bg-gray-800 
+      bg-white dark:bg-gray-800 z-50
       border-t border-gray-200 dark:border-gray-700
       shadow-md flex justify-around items-center py-2">
 
