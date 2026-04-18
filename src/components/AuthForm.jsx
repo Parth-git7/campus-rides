@@ -1,5 +1,6 @@
 function AuthForm({
   user,
+  userProfile,
   email,
   setEmail,
   password,
@@ -14,29 +15,103 @@ function AuthForm({
   name,
   setName,
   branch,
-  setBranch
+  setBranch,
+  totalRequests,
+  totalRides
 }) {
 
   // ✔ If user logged in → show profile
   if (user) {
     return (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
 
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-          Profile
-        </h2>
+        {/* TOP GRADIENT BANNER */}
+        <div className="h-24 bg-gradient-to-br from-blue-500 to-blue-700 relative">
+          
+          {/* AVATAR */}
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
+            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-900 flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-700">
+              <span className="text-2xl font-black text-blue-600">
+                {userProfile?.name ? userProfile.name[0].toUpperCase() : user.email[0].toUpperCase()}
+              </span>
+            </div>
+          </div>
 
-        <p className="mt-2 text-gray-600 dark:text-gray-300">
-          {user?.email}
-        </p>
+        </div>
 
-        <button 
-          onClick={handleLogout} // ✔ logout function
-          className="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-full"
-        >
-          Logout
-        </button>
+        {/* PROFILE BODY */}
+        <div className="pt-12 pb-6 px-6">
 
+          {/* NAME + BRANCH */}
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-black text-gray-900 dark:text-white">
+              {userProfile?.name || "—"}
+            </h2>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 uppercase tracking-wider mt-1">
+              {userProfile?.branch || "—"}
+            </span>
+          </div>
+
+          {/* DIVIDER */}
+          <div className="border-t border-gray-100 dark:border-gray-700 mb-5"></div>
+
+          {/* DETAILS */}
+          <div className="flex flex-col gap-3 mb-6">
+
+            {/* Email */}
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Email</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{user.email}</span>
+            </div>
+
+            {/* Member Since */}
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Member Since</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {user.metadata?.creationTime
+                  ? new Date(user.metadata.creationTime).toLocaleDateString("default", { month: "long", year: "numeric" })
+                  : "—"}
+              </span>
+            </div>
+
+          </div>
+
+          {/* STATS */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+
+            <div className="flex flex-col items-center bg-blue-50 dark:bg-blue-900/20 py-4 rounded-2xl">
+              <span className="text-2xl font-black text-blue-600 dark:text-blue-400">
+                {totalRides}
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold mt-1">
+                Rides Posted
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center bg-blue-50 dark:bg-blue-900/20 py-4 rounded-2xl">
+              <span className="text-2xl font-black text-blue-600 dark:text-blue-400">
+                {totalRequests}
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold mt-1">
+                Rides Requested
+              </span>
+            </div>
+
+          </div>
+
+          {/* LOGOUT */}
+          <button
+            onClick={handleLogout}
+            className="w-full py-3 rounded-xl text-sm font-bold
+              bg-red-100 hover:bg-red-200 text-red-600
+              dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:text-red-400
+              border border-red-200 dark:border-red-800
+              transition-all"
+          >
+            Logout
+          </button>
+
+        </div>
       </div>
     );
   }

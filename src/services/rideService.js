@@ -2,12 +2,12 @@
 
 // This file will contain all ride-related logic
 import { db } from "../firebase";
-import { doc, collection, addDoc , updateDoc, deleteDoc, runTransaction, getDocs} from "firebase/firestore";
+import { doc, collection, addDoc , updateDoc, deleteDoc, runTransaction, getDocs, query, where, onSnapshot} from "firebase/firestore";
 
-export const testService = () => {
-//   alert("Service working"); // 🔥 force visible output
-  console.log("Service layer working ✅");
-};
+// export const testService = () => {
+// //   alert("Service working"); // force visible output
+//   console.log("Service layer working ");
+// };
 
 
 // Post a ride
@@ -102,11 +102,6 @@ export const testService = () => {
     return docRef;
     };
 
-
-
-
-    /// handleUpdateRequest///////////////////////////
-
     // update request (accept/reject)
     export const updateRequest = async ({ requestId, newStatus, rideData }) => {
 
@@ -162,16 +157,19 @@ export const testService = () => {
     };
 
     // fetch rides created by user
-    export const getMyRides = async (userEmail) => {
+    export const subscribeMyRides = (userEmail, callback) => {
 
-      const querySnapshot = await getDocs(collection(db, "rides"));
+      const q = query(
+        collection(db, "rides"),
+        where("userEmail", "==", userEmail)
+      );
 
-      const myRides = querySnapshot.docs
-        .map(doc => ({
+      // returns unsubscribe function — same pattern as fetchRides
+      return onSnapshot(q, (snapshot) => {
+        const myRides = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        }))
-        .filter(ride => ride.userEmail === userEmail);
-
-      return myRides;
+        }));
+        callback(myRides);
+      });
     };

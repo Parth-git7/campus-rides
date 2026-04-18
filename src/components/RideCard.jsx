@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { formatDate } from '../utils/utils';
 function RideCard({
   ride,
   user,
@@ -13,26 +13,7 @@ function RideCard({
   const isFull = Number(ride.seats) <= 0;
   const isSelected = selectedRide?.id === ride.id;
 
-  const formatDate = (dateString) => {
-  const date = new Date(dateString);
-
-  const day = date.getDate();
-
-  // add suffix (st, nd, rd, th)
-  const getSuffix = (d) => {
-    if (d > 3 && d < 21) return "th";
-    switch (d % 10) {
-      case 1: return "st";
-      case 2: return "nd";
-      case 3: return "rd";
-      default: return "th";
-    }
-  };
-
-  const month = date.toLocaleString("default", { month: "long" });
-
-  return `${day}${getSuffix(day)} ${month}`;
-};
+  
 
   return (
     <div className={`

@@ -4,20 +4,20 @@ import { auth } from "./firebase"; // firebase authentication
 import { createUserWithEmailAndPassword } from "firebase/auth"; // for user creation
 import { signOut } from "firebase/auth"; // for log out 
 import { db } from "./firebase";  // firestore database
-import { collection, addDoc, updateDoc, doc , onSnapshot, getDocs, runTransaction} from "firebase/firestore"; // getting data from firestore
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import { deleteDoc } from "firebase/firestore";
 import { useEffect } from "react"; // accessing database without posting
 import { onAuthStateChanged } from "firebase/auth";
 
 import toast, { Toaster } from "react-hot-toast";
 
-// import { testService } from "./services/rideService";// testing only
 import { postRide } from "./services/rideService";
 import { requestRide } from "./services/rideService";
 import { updateRequest } from "./services/rideService";
 import { cancelRequest } from "./services/rideService";
 import { deleteRide } from "./services/rideService";
-import { getMyRides } from "./services/rideService";
+// import { getMyRides } from "./services/rideService";
+import { subscribeMyRides } from "./services/rideService";  // replace getMyRides
 import { getUserProfile } from "./services/userService";
 
 import RideCard from "./components/RideCard"; //  import component ridecard
@@ -26,6 +26,8 @@ import Navbar from "./components/Navbar"; // import navbar component
 import PostRideModal from "./components/PostRideModal"; // import post ride modal
 import SearchBox from "./components/SearchBox" ; // import search box 
 import AuthForm from "./components/AuthForm"; // import auth component
+import RequestCard from "./components/RequestCard";
+import MyRideCard from "./components/MyRideCard";
 
 function App() {
 
@@ -156,6 +158,10 @@ function App() {
         setTime("");
         setFare("");
         setSeats("");
+        setDate("");
+        setVehicleType("");
+        setVehicleName("");
+        setVehicleNumber("");
         setShowForm(false);
 
       } catch (error) {
@@ -201,13 +207,8 @@ function App() {
         .slice() //  copy array (important)
         .reverse(); //  newest first
 
-      const fetchMyRides = async () => {
-        const myRidesArray = await getMyRides(user?.email);
-        setMyRides(myRidesArray);
-      };
 
-
-      const fetchRequests = () => {
+    const fetchRequests = () => {
         //  listen to rideRequests collection in real-time
         return onSnapshot(collection(db, "rideRequests"), (snapshot) => {
 
@@ -238,7 +239,7 @@ function App() {
 
           fetchRequests();
           fetchRides();
-          fetchMyRides();
+          
 
         } catch (error) {
           toast.error(error.message);
@@ -259,7 +260,6 @@ function App() {
           toast.success("Ride Deleted");
 
           fetchRides();
-          fetchMyRides();
 
         } catch (error) {
           console.log(error.message);
@@ -303,21 +303,23 @@ function App() {
 
       
       useEffect(() => {
-        const unsubscribeRides = fetchRides(); //  rides listener
+        const unsubscribeRides = fetchRides();
         let unsubscribeRequests = null;
+        let unsubscribeMyRides = null;
 
         if (user) {
-          fetchMyRides(); // still normal fetch
+          // real-time listener for my rides
+          unsubscribeMyRides = subscribeMyRides(user.email, (myRidesArray) => {
+            setMyRides(myRidesArray);
+          });
 
-          unsubscribeRequests = fetchRequests(); //  requests listener
+          unsubscribeRequests = fetchRequests();
         }
 
         return () => {
-          unsubscribeRides(); //  cleanup rides
-
-          if (unsubscribeRequests) {
-            unsubscribeRequests(); // cleanup requests
-          }
+          unsubscribeRides();
+          if (unsubscribeRequests) unsubscribeRequests();
+          if (unsubscribeMyRides) unsubscribeMyRides();  // cleanup
         };
 
       }, [user]);
@@ -357,8 +359,9 @@ function App() {
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
   
           <Toaster position="top-center" reverseOrder={false} />
-          <div className="text-center">
-            <div className="text-center">
+          {/* <div className="text-center"> */}
+          <div className="relative">
+            {/* <div className="text-center"> */}
             {activeTab === "home" && (
               <div className="p-4">
                 
@@ -453,141 +456,92 @@ function App() {
             />
 
             {/* Posting a new ride form / modal  */}
-            <PostRideModal
-              showForm={showForm} // controls visibility
-              setShowForm={setShowForm} // close modal
+           <PostRideModal
+              showForm={showForm}
+              setShowForm={setShowForm}
 
-              setFrom={setFrom} // form state
-              setTo={setTo}
-              setTime={setTime}
-              setFare={setFare}
-              setSeats={setSeats}
-              setDate={setDate}
-              setVehicleType={setVehicleType}
-              setVehicleName={setVehicleName}
-              setVehicleNumber={setVehicleNumber}
+              from={from} setFrom={setFrom}     
+              to={to} setTo={setTo}
+              time={time} setTime={setTime}
+              fare={fare} setFare={setFare}
+              seats={seats} setSeats={setSeats}
+              date={date} setDate={setDate}
+              vehicleType={vehicleType} setVehicleType={setVehicleType}
+              vehicleName={vehicleName} setVehicleName={setVehicleName}
+              vehicleNumber={vehicleNumber} setVehicleNumber={setVehicleNumber}
 
-              handlePostRide={handlePostRide} // submit logic
+              handlePostRide={handlePostRide}
             />
               
               {activeTab === "requests" && (
-                <div className="mt-6">
+                <div className="p-4 mt-2">
+
+                  <h2 className="text-xl font-bold text-left mb-4 text-gray-800 dark:text-gray-100">
+                    My Requests
+                  </h2>
 
                   {myRequests.length === 0 ? (
-                    <p>No requests yet</p>
+                    <p className="text-gray-500 text-sm text-center py-6">
+                      No requests yet.
+                    </p>
                   ) : (
-                  myRequests.map((req) => {
+                    myRequests.map((req) => {
+                      const ride = rides.find((r) => r.id === req.rideId);
+                      if (!ride) return null;
 
-                    // find the ride for this request
-                    const ride = rides.find((r) => r.id === req.rideId);
-
-                    if (!ride) return null;
-
-                    return (
-                      <div key={req.id} className="bg-white p-4 rounded shadow mb-2">
-
-                        <p><b>{ride.from}</b> → {ride.to}</p>
-                        <p>Time: {ride.time}</p>
-
-                        <p>
-                          Status:
-                          {req.status === "pending" && " Requested"}
-                          {req.status === "accepted" && " Accepted"}
-                          {req.status === "rejected" && " Rejected"}
-                        </p>
-
-                        {req.status === "pending" && (
-                          <button 
-                            onClick={() => handleCancelRequest(req.id)}
-                            className="mt-2 bg-red-500 text-white px-3 py-1 rounded"
-                          >
-                            Cancel Request
-                          </button>
-                        )}
-
-                      </div>
-                    );
-                  })
-                )}
-                
-              </div>
+                      return (
+                        <RequestCard
+                          key={req.id}
+                          req={req}
+                          ride={ride}
+                          setSelectedRide={setSelectedRide}       // opens existing RideModal
+                          handleCancelRequest={handleCancelRequest}
+                        />
+                      );
+                    })
+                  )}
+                </div>
               )}
+                
+
+            
 
               {activeTab === "myrides" && (
+              <div className="p-4 mt-2">
 
-              <div className="mt-8">
-              <h2 className="text-xl font-bold mb-2">My Rides</h2>
+                <h2 className="text-xl font-bold text-left mb-4 text-gray-800 dark:text-gray-100">
+                  My Rides
+                </h2>
 
-              {myRides.slice().reverse().map((ride) => {
-                const rideRequests = requests.filter(
-                  (req) => req.rideId === ride.id
-                );
-                
+                {myRides.length === 0 ? (
+                  <p className="text-gray-500 text-sm text-center py-6">
+                    You haven't posted any rides yet.
+                  </p>
+                ) : (
+                  myRides.slice().reverse().map((ride) => (
+                    <MyRideCard
+                      key={ride.id}
+                      ride={ride}
+                      requests={requests}
+                      setSelectedRide={setSelectedRide}
+                      handleUpdateRequest={handleUpdateRequest}
+                      handleDeleteRide={handleDeleteRide}
+                      user={user}
+                    />
+                  ))
+                )}
 
-                return (
-                  <div key={ride.id} className="bg-white p-4 rounded shadow mb-2">
-                    <p><b>{ride.from}</b> → {ride.to}</p>
-                    <p>Time: {ride.time}</p>
-                    <p>Seats: {ride.seats}</p>
-
-                    {rideRequests.length > 0 && (
-                        <>
-                          <p className="mt-2 font-semibold">Requests:</p>
-
-                          {rideRequests.map((req) => (
-                            <div key={req.id} className="border p-2 mt-1 rounded">
-                              <p>{req.riderEmail}</p>
-                              <p>Status: {req.status}</p>
-
-                              {req.status === "pending" && (
-                                <div className="mt-2">
-                                  <button 
-                                    onClick={() => handleUpdateRequest(req.id, "accepted", ride)}
-
-                                    // ❌ disable if no seats
-                                    disabled={Number(ride.seats) <= 0}
-
-                                    className={`px-2 py-1 rounded mr-2 ${
-                                      Number(ride.seats) <= 0
-                                        ? "bg-gray-400 cursor-not-allowed"
-                                        : "bg-green-600 text-white"
-                                    }`}
-                                  >
-                                    {Number(ride.seats) <= 0 ? "Full" : "Accept"}
-                                  </button>
-
-                                  <button 
-                                    onClick={() => handleUpdateRequest(req.id, "rejected", ride)}
-                                    className="bg-red-500 text-white px-2 py-1 rounded"
-                                  >
-                                    Reject
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </>
-                      )}
-                    {ride.userEmail === user?.email && (
-                          <button 
-                            onClick={() => handleDeleteRide(ride.id)}
-                            className="mt-2 bg-red-900 text-white px-3 py-1 rounded"
-                          >
-                            Delete Ride
-                          </button>
-                        )}
-                  </div>
-                );
-              })}
-
-            </div>
-              )}
+              </div>
+            )}
           </div>
 
           {activeTab === "profile" && (
             <div className="p-4">
               <AuthForm
                 user={user}
+                userProfile={userProfile}                    
+                totalRides={myRides.length}                  
+                totalRequests={myRequests.length}        
 
                 email={email}
                 setEmail={setEmail}
@@ -623,7 +577,7 @@ function App() {
           </div>
 
       
-      </div>
+      
       </div>
       </div>
     );

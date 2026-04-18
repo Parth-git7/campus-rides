@@ -3,7 +3,7 @@ function RideModal({ selectedRide, setSelectedRide, user, setActiveTab }) {
   if (!selectedRide) return null; // ✔ don't render if no ride selected
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[60]">
 
       <div className="relative bg-white dark:bg-gray-800 p-6 rounded-xl w-80 shadow-lg text-black dark:text-white">
 

@@ -1,15 +1,15 @@
 function PostRideModal({
   showForm,
   setShowForm,
-  setFrom,
-  setTo,
-  setTime,
-  setFare,
-  setSeats,
-  setDate,
-  setVehicleType,
-  setVehicleName,
-  setVehicleNumber,
+  from, setFrom,        
+  to, setTo,
+  time, setTime,
+  fare, setFare,
+  seats, setSeats,
+  date, setDate,
+  vehicleType, setVehicleType,
+  vehicleName, setVehicleName,
+  vehicleNumber, setVehicleNumber,
   handlePostRide
 }) {
 
@@ -35,6 +35,7 @@ function PostRideModal({
         <input 
           type="text"
           placeholder="From"
+          value={from}
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setFrom(e.target.value)}
         />
@@ -42,23 +43,27 @@ function PostRideModal({
         <input 
           type="text"
           placeholder="To"
+          value={to}
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setTo(e.target.value)}
         />
 
         <input 
           type="date"
+          value={date}
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setDate(e.target.value)}
         />
 
         <input 
           type="time"
+          value={time}
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setTime(e.target.value)}
         />
 
         <select
+          value={vehicleType}
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setVehicleType(e.target.value)}
         >
@@ -70,6 +75,7 @@ function PostRideModal({
 
         <input 
           type="text"
+          value={vehicleName}
           placeholder="Vehicle Name (e.g. Alto, Scorpio)"
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setVehicleName(e.target.value)}
@@ -77,6 +83,7 @@ function PostRideModal({
 
         <input 
           type="text"
+          value={vehicleNumber}
           placeholder="Vehicle Number (e.g. PB01 AK 0992)"
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setVehicleNumber(e.target.value)}
@@ -84,6 +91,7 @@ function PostRideModal({
 
         <input   
           type="number"
+          value={fare}
           placeholder="Fare"
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setFare(e.target.value)}
@@ -91,6 +99,7 @@ function PostRideModal({
 
         <input
           type="number"
+          value={seats}
           placeholder="Seats available"
           className="w-full p-2 border rounded mb-2"
           onChange={(e) => setSeats(e.target.value)}
