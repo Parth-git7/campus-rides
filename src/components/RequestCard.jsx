@@ -3,7 +3,7 @@ import { formatDate } from '../utils/utils';
 function RequestCard({
   req,
   ride,
-  setSelectedRide,
+  onViewDetails,
   handleCancelRequest
 }) {
 
@@ -38,8 +38,16 @@ function RequestCard({
 
             {/* Avatar */}
             <div className="relative">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner">
-                {ride.userName ? ride.userName[0].toUpperCase() : "U"}
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner overflow-hidden">
+              {ride.userPhoto ? (
+                <img
+                  src={ride.userPhoto}
+                  alt="driver"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                ride.userName ? ride.userName[0].toUpperCase() : "U"
+              )}
             </div>
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
             </div>
@@ -115,7 +123,7 @@ function RequestCard({
 
         {/* View Details — same as RideCard */}
         <button
-          onClick={() => setSelectedRide(ride)}
+          onClick={onViewDetails}
           className="flex-1 py-3 px-4 rounded-xl text-sm font-bold
             bg-blue-600 hover:bg-blue-700 text-white
             shadow-md shadow-blue-200 dark:shadow-none transition-all"

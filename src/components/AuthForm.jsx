@@ -1,6 +1,7 @@
 function AuthForm({
   user,
   userProfile,
+  handlePhotoUpload,
   email,
   setEmail,
   password,
@@ -30,13 +31,39 @@ function AuthForm({
           
           {/* AVATAR */}
           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
-            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-900 flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-700">
-              <span className="text-2xl font-black text-blue-600">
-                {userProfile?.name ? userProfile.name[0].toUpperCase() : user.email[0].toUpperCase()}
-              </span>
-            </div>
-          </div>
+            <label className="cursor-pointer group">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) handlePhotoUpload(file);
+                }}
+              />
+              <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-900 flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-700 overflow-hidden relative">
+                
+                {/* show photo if exists, else show letter */}
+                {userProfile?.photoURL ? (
+                  <img
+                    src={userProfile.photoURL}
+                    alt="profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl font-black text-blue-600">
+                    {userProfile?.name ? userProfile.name[0].toUpperCase() : user.email[0].toUpperCase()}
+                  </span>
+                )}
 
+                {/* hover overlay — hints that photo is clickable */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                  <span className="text-white text-[10px] font-bold">EDIT</span>
+                </div>
+
+              </div>
+            </label>
+          </div>
         </div>
 
         {/* PROFILE BODY */}

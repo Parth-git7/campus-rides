@@ -3,7 +3,7 @@ import { formatDate } from "../utils/utils";
 function MyRideCard({
   ride,
   requests,
-  setSelectedRide,
+  onViewDetails,
   handleUpdateRequest,
   handleDeleteRide,
   user
@@ -91,7 +91,7 @@ function MyRideCard({
         <div className="flex gap-3">
 
         <button
-            onClick={() => setSelectedRide(ride)}
+            onClick={onViewDetails}
             className="flex-1 py-3 px-4 rounded-xl text-sm font-bold
             bg-blue-600 hover:bg-blue-700 text-white
             shadow-md shadow-blue-200 dark:shadow-none

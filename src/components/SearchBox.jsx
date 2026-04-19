@@ -1,64 +1,84 @@
 function SearchBox({
-  user,
   searchFrom,
   setSearchFrom,
   searchTo,
   setSearchTo,
-  setActiveTab
 }) {
-  
-    return (
-        <div className="mb-4 relative">
 
-            {/* 🔒 Overlay for logged out users
-            {!user && (
-            <div className="absolute inset-0 bg-white/70 backdrop-blur-[1.5px] z-10 flex items-center justify-center rounded-xl">
-                <div className="text-center">
-                <p className="text-lg font-semibold">Login to search rides</p>
-                <button
-                    onClick={() => setActiveTab("profile")}
-                    className="mt-2 bg-blue-600 text-white px-4 py-1 rounded"
-                >
-                    Go to Login
-                </button>
-                </div>
-            </div>
-            )} */}
+  return (
+    <div className="
+      relative overflow-hidden
+      bg-white dark:bg-gray-800/50
+      rounded-3xl
+      border-2 border-gray-100 dark:border-gray-700/50
+      shadow-md
+      mt-4
+    ">
 
-            {/* 🔍 Search Container */}
-            <div className="mt-6 space-y-5">
+      {/* TOP GRADIENT — matches card vibe */}
+      <div className="pointer-events-none absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-blue-300/60 to-transparent dark:from-blue-600/30"></div>
 
-            <h2 className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-200">
-                Find a Ride
-            </h2>
+      <div className="p-5 relative z-10">
 
-            {/* Inputs */}
-            <div className="flex flex-col sm:flex-row gap-2">
-                
-                <input
-                type="text"
-                placeholder="From (e.g. Chandigarh)"
-                value={searchFrom}
-                onChange={(e) => setSearchFrom(e.target.value)}
-                className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                // disabled={!user}
-                />
+        {/* HEADING */}
+        <p className="text-[15px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-bold mb-4">
+          Find a Ride
+        </p>
 
-                <input
-                type="text"
-                placeholder="To (e.g. Patiala)"
-                value={searchTo}
-                onChange={(e) => setSearchTo(e.target.value)}
-                className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                // disabled={!user}
-                />
-
-            </div>
-
-            </div>
+        {/* FROM INPUT */}
+        <div className="mb-3">
+          <label className="text-[12px] uppercase tracking-widest text-gray-400 font-bold mb-1 block">
+            From
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Chandigarh"
+            value={searchFrom}
+            onChange={(e) => setSearchFrom(e.target.value)}
+            className="
+              w-full px-4 py-3 rounded-xl
+              bg-gray-50 dark:bg-gray-900/50
+              border border-gray-200 dark:border-gray-700
+              text-sm text-gray-800 dark:text-gray-200
+              placeholder-gray-400
+              focus:outline-none focus:ring-2 focus:ring-blue-500
+              transition-all
+            "
+          />
         </div>
-        );
 
+        {/* DIVIDER WITH ARROW
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+          <span className="text-blue-500 font-bold text-sm">↓</span>
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+        </div> */}
+
+        {/* TO INPUT */}
+        <div>
+          <label className="text-[12px] uppercase tracking-widest text-gray-400 font-bold mb-1 block">
+            To
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Patiala"
+            value={searchTo}
+            onChange={(e) => setSearchTo(e.target.value)}
+            className="
+              w-full px-4 py-3 rounded-xl
+              bg-gray-50 dark:bg-gray-900/50
+              border border-gray-200 dark:border-gray-700
+              text-sm text-gray-800 dark:text-gray-200
+              placeholder-gray-400
+              focus:outline-none focus:ring-2 focus:ring-blue-500
+              transition-all
+            "
+          />
+        </div>
+
+      </div>
+    </div>
+  );
 }
 
 export default SearchBox;

@@ -1,17 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/utils';
 function RideCard({
   ride,
   user,
   alreadyRequested,
-  selectedRide,
-  setSelectedRide,
   handleRequestRide,
-  setActiveTab
+  onViewDetails,
 }) {
   const isOwner = ride.userEmail === user?.email;
   const isFull = Number(ride.seats) <= 0;
-  const isSelected = selectedRide?.id === ride.id;
+  const navigate = useNavigate();
 
   
 
@@ -19,20 +18,25 @@ function RideCard({
     <div className={`
       relative overflow-hidden
       bg-white dark:bg-gray-800/50 
-      
       p-6 rounded-3xl 
       border-2 transition-all duration-300
-      ${isSelected 
-        ? 'border-blue-500 shadow-lg ring-1 ring-blue-500/20' 
-        : 'border-gray-100 dark:border-gray-700/50 shadow-md hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/30'}
+      border-gray-100 dark:border-gray-700/50 shadow-md hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/30
     `}>
       <div className="pointer-events-none absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-blue-300/60 to-transparent dark:from-blue-600/30"></div>
       {/* HEADER: USER & VEHICLE */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner">
-              {ride.userName ? ride.userName[0].toUpperCase() : "U"}
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner overflow-hidden">
+              {ride.userPhoto ? (
+                <img
+                  src={ride.userPhoto}
+                  alt="driver"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                ride.userName ? ride.userName[0].toUpperCase() : "U"
+              )}
             </div>
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
           </div>
@@ -116,18 +120,16 @@ function RideCard({
 
       {/* ACTION BUTTONS */}
       <div className="flex gap-3">
-        <button 
-          onClick={() => setSelectedRide(isSelected ? null : ride)}
-          className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all
-            ${isSelected 
-              ? 'bg-gray-100 dark:bg-black dark:bg-gray-700 text-gray-900 dark:text-white' 
-              : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200 dark:shadow-none'}`}
+        <button
+          onClick={onViewDetails}
+          className="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all
+            bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200 dark:shadow-none"
         >
-          {isSelected ? 'Close Details' : 'View Details'}
+          View Details
         </button>
 
-        <button 
-          onClick={() => !user ? setActiveTab("profile") : handleRequestRide(ride)}
+        <button
+          onClick={() => !user ? navigate("/profile") : handleRequestRide(ride)}
           disabled={isFull || isOwner || alreadyRequested}
           className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all
             ${(isFull || isOwner || alreadyRequested)
