@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/utils';
+import OutsiderBadge from './OutsiderBadge';
 function RideCard({
   ride,
   user,
@@ -18,7 +19,7 @@ function RideCard({
     <div className={`
       relative overflow-hidden
       bg-white dark:bg-gray-800/50 
-      p-6 rounded-3xl 
+      p-4 rounded-3xl 
       border-2 transition-all duration-300
       border-gray-100 dark:border-gray-700/50 shadow-md hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/30
     `}>
@@ -27,7 +28,7 @@ function RideCard({
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner overflow-hidden">
               {ride.userPhoto ? (
                 <img
                   src={ride.userPhoto}
@@ -42,26 +43,36 @@ function RideCard({
           </div>
           
           <div>
-            <h3 className="text-[15px] font-bold text-gray-900 dark:text-white leading-tight">
+           <h3 className="text-[15px] font-bold text-gray-900 dark:text-white leading-tight">
               {ride.userName}
             </h3>
+
+            {/* Vehicle name tag */}
             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 mt-1 uppercase tracking-wider">
               {ride.vehicleName || "-"}
             </span>
+
+            {/* Outsider warning — shows only if poster is not from Chitkara */}
+            <OutsiderBadge email={ride.userEmail} />
           </div>
+          
         </div>
 
+
         <div className="text-right">
+          
           <p className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
             <span className="text-sm font-normal text-gray-500 mr-1">₹</span>
             {ride.fare}
           </p>
+          
         </div>
       </div>
 
+              
       {/* ROUTE SECTION */}
-      <div className="flex gap-4 mb-4 relative">
-        <div className="flex flex-col items-center py-1">
+      <div className="flex gap-4 mb-4 px-3 relative">
+        <div className="flex flex-col items-center py-2">
           <div className="w-2.5 h-2.5 rounded-full border-2 border-blue-600 bg-white dark:bg-gray-800 "></div>
           <div className="w-0.5 flex-1 bg-gradient-to-b from-blue-600 via-gray-200 dark:via-gray-700 to-gray-300 dark:to-gray-600 my-1"></div>
           <div className="w-2.5 h-2.5 rounded-full bg-blue-600 "></div>

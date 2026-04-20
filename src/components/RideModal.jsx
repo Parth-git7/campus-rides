@@ -1,4 +1,24 @@
+
+
+
+//////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+//  File no longer needed 
+/////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
 function RideModal({ selectedRide, setSelectedRide, user, setActiveTab }) {
+import OutsiderBadge from './OutsiderBadge';
 
   if (!selectedRide) return null; // ✔ don't render if no ride selected
 
@@ -46,9 +66,13 @@ function RideModal({ selectedRide, setSelectedRide, user, setActiveTab }) {
         
         <p><b>Vehicle:</b> {selectedRide.vehicleType}</p>
         <p><b>Vehicle No:</b> {selectedRide.vehicleNumber}</p>
-        <p className="text-gray-500 mt-1">
-          Posted by: {selectedRide.userEmail}
-        </p>
+        {/* email + outsider badge in same row */}
+        <div className="flex items-center gap-2 mt-1 flex-wrap">
+          <p className="text-gray-500 text-sm">
+            Posted by: {selectedRide.userEmail}
+          </p>
+          <OutsiderBadge email={selectedRide.userEmail} />
+        </div>
 
         <button 
           onClick={() => setSelectedRide(null)}

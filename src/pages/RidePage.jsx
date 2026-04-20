@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { formatDate } from "../utils/utils";
+import OutsiderBadge from '../components/OutsiderBadge';
 
 function RidePage({ user, rides, requests, handleRequestRide }) {
 
@@ -103,7 +104,9 @@ function RidePage({ user, rides, requests, handleRequestRide }) {
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {ride.userBranch || "—"}
                 </p>
+                
               </div>
+              <OutsiderBadge email={ride.userEmail} />
             </div>
 
             <div className="border-t border-gray-100 dark:border-gray-700 mb-5"></div>
@@ -155,6 +158,13 @@ function RidePage({ user, rides, requests, handleRequestRide }) {
                 <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Vehicle No</span>
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {ride.vehicleNumber}
+                </span>
+              </div>
+
+              <div className="flex justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+                <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Email</span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {ride.userEmail}
                 </span>
               </div>
 

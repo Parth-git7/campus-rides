@@ -1,4 +1,5 @@
 import { formatDate } from '../utils/utils';
+import OutsiderBadge from './OutsiderBadge';
 
 function RequestCard({
   req,
@@ -20,7 +21,7 @@ function RequestCard({
     <div className="
       relative overflow-hidden
       bg-white dark:bg-gray-800/50
-      p-6 rounded-3xl
+      p-6 pt-4 rounded-3xl
       border-2 border-gray-100 dark:border-gray-700/50
       shadow-md hover:shadow-lg
       transition-all duration-300
@@ -32,13 +33,13 @@ function RequestCard({
 
      
       {/* HEADER: driver info + fare — same as RideCard */}
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-4 ">
 
         <div className="flex items-center gap-3">
 
             {/* Avatar */}
             <div className="relative">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white shadow-inner overflow-hidden">
               {ride.userPhoto ? (
                 <img
                   src={ride.userPhoto}
@@ -52,15 +53,20 @@ function RequestCard({
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
             </div>
 
-            {/* Name + vehicle */}
             <div>
-            <h3 className="text-[15px] font-bold text-gray-900 dark:text-white leading-tight">
-                {ride.userName}
-            </h3>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 mt-1 uppercase tracking-wider">
-                {ride.vehicleName || "-"}
-            </span>
+              <h3 className="text-[15px] font-bold text-gray-900 dark:text-white leading-tight">
+                  {ride.userName}
+                </h3>
+
+                {/* Vehicle name tag */}
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 mt-1 uppercase tracking-wider">
+                  {ride.vehicleName || "-"}
+                </span>
+
+                {/* Outsider warning — shows only if poster is not from Chitkara */}
+                <OutsiderBadge email={ride.userEmail} />
             </div>
+            
 
         </div>
 

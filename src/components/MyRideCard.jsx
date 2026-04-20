@@ -1,4 +1,5 @@
 import { formatDate } from "../utils/utils";
+import OutsiderBadge from './OutsiderBadge';
 
 function MyRideCard({
   ride,
@@ -135,7 +136,7 @@ function MyRideCard({
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate max-w-[55%]">
                   {req.riderEmail}
                 </p>
-
+                <OutsiderBadge email={req.riderEmail} />
                 {/* action area */}
                 {req.status === "pending" ? (
                   <div className="flex gap-2">
