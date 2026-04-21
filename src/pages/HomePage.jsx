@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import SearchBox from "../components/SearchBox";
 import RideCard from "../components/RideCard";
+import Header from "../components/Header"; 
 
 function HomePage({
   user,
+  userProfile,  
   rides,
   filteredRides,
   loading,
@@ -17,6 +19,9 @@ function HomePage({
 
   return (
     <div className="p-4">
+      {/* HEADER */}
+      <Header user={user} userProfile={userProfile} />
+      
 
       {/* Search Box */}
       <SearchBox
@@ -26,8 +31,8 @@ function HomePage({
         setSearchTo={setSearchTo}
       />
 
-      <div className="mt-6 space-y-5">
-        <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+      <div className="space-y-2">
+        <div className="border-t border-gray-300 dark:border-gray-700 my-3"></div>
 
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
@@ -40,7 +45,8 @@ function HomePage({
           )}
         </div>
 
-        <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+        <div className="border-t border-gray-300 dark:border-gray-700 my-3"></div>
+        
 
         {loading ? (
           <p>Loading rides...</p>

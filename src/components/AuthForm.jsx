@@ -20,6 +20,8 @@ function AuthForm({
   totalRequests,
   totalRides,
   handleSaveProfile: onSaveProfile,
+  darkMode,
+  setDarkMode,
 }) {
 
   // ✔ If user logged in → show profile
@@ -153,8 +155,22 @@ function AuthForm({
             </div>
 
           </div>
-
           
+          {/* Dark Mode  */}
+          <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl mb-3">
+            <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">
+              Dark Mode
+            </span>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none
+                ${darkMode ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"}`}
+            >
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200
+                ${darkMode ? "translate-x-5" : "translate-x-0"}`}
+              />
+            </button>
+          </div>
 
           {/* LOGOUT */}
           <button

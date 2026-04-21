@@ -16,6 +16,10 @@ const useUI = () => {
     setShowForm(false);
   }, [activeTab]);
 
+  useEffect(() => {
+    localStorage.setItem("darkMode", darkMode);
+  }, [darkMode]);
+
   return {
     activeTab, setActiveTab,
     darkMode, setDarkMode,

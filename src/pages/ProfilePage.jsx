@@ -16,6 +16,8 @@ function ProfilePage({
   branch, setBranch,
   handlePhotoUpload,
   handleSaveProfile,
+  darkMode,       
+  setDarkMode, 
 }) {
 
   return (
@@ -37,6 +39,8 @@ function ProfilePage({
         branch={branch} setBranch={setBranch}
         handlePhotoUpload={handlePhotoUpload}
         handleSaveProfile={handleSaveProfile}
+        darkMode={darkMode}        
+        setDarkMode={setDarkMode} 
         
       />
     </div>

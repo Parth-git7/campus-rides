@@ -46,15 +46,7 @@ function App() {
           <Toaster position="top-center" reverseOrder={false} />
 
           {/* ---- BOTTOM NAVBAR (visible on all pages) ---- */}
-          <Navbar />
-
-          {/* ---- DARK MODE TOGGLE ---- */}
-          <button
-            onClick={() => ui.setDarkMode(!ui.darkMode)}
-            className="fixed top-4 right-4 bg-gray-300 dark:bg-gray-700 px-3 py-1 rounded z-40"
-          >
-            {ui.darkMode ? "Light" : "Dark"}
-          </button>
+          <Navbar/>
 
           {/* ---- ROUTES ---- */}
           <Routes>
@@ -64,6 +56,7 @@ function App() {
               element={
                 <HomePage
                   user={auth.user}
+                  userProfile={auth.userProfile} 
                   rides={rides.rides}
                   filteredRides={filteredRides}
                   loading={rides.loading}
@@ -121,6 +114,8 @@ function App() {
                   branch={auth.branch} setBranch={auth.setBranch}
                   handlePhotoUpload={auth.handlePhotoUpload}
                   handleSaveProfile={auth.handleSaveProfile}
+                  darkMode={ui.darkMode}
+                  setDarkMode={ui.setDarkMode}
                 />
               }
             />
