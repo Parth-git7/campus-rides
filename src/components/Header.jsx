@@ -1,10 +1,10 @@
 function Header({ user, userProfile }) {
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Morning";
-    if (hour < 17) return "Afternoon";
-    return "Evening";
-  };
+//   const getGreeting = () => {
+//     const hour = new Date().getHours();
+//     if (hour < 12) return "Morning";
+//     if (hour < 17) return "Afternoon";
+//     return "Evening";
+//   };
 
  return (
    

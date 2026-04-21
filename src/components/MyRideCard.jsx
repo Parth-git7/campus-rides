@@ -39,7 +39,7 @@ function MyRideCard({
     if (rideRequests.length > 0) {
       fetchProfiles();
     }
-  }, [rideRequests.length]); 
+  }, [rideRequests]); 
 
 
   return (
