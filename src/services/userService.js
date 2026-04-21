@@ -72,3 +72,9 @@ export const uploadProfilePhoto = async (file) => {
 
     return photoMap; // { "email@x.com": "https://cloudinary..." }
   };
+
+  // Save phone and gender to Firestore user document
+  export const updateUserProfile = async (userId, { phone, gender }) => {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, { phone, gender });
+  };

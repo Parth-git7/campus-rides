@@ -120,6 +120,7 @@ function App() {
                   name={auth.name} setName={auth.setName}
                   branch={auth.branch} setBranch={auth.setBranch}
                   handlePhotoUpload={auth.handlePhotoUpload}
+                  handleSaveProfile={auth.handleSaveProfile}
                 />
               }
             />

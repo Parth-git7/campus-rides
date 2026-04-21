@@ -1,6 +1,7 @@
 import { formatDate } from "../utils/utils";
 import OutsiderBadge from './OutsiderBadge';
-
+import { useState, useEffect } from "react"; //
+import { getUserProfile } from "../services/userService"; //
 function MyRideCard({
   ride,
   requests,
@@ -11,9 +12,35 @@ function MyRideCard({
 }) {
 
   const isFull = Number(ride.seats) <= 0;
+  
+  // track which requester row is expanded
+  const [expandedReq, setExpandedReq] = useState(null);
 
   // filter requests for this specific ride
   const rideRequests = requests.filter((req) => req.rideId === ride.id);
+
+  // store fetched profiles — { "email": { name, photo, phone, branch } }
+  const [requesterProfiles, setRequesterProfiles] = useState({});
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      const profiles = {};
+
+      await Promise.all(
+        rideRequests.map(async (req) => {
+          const profile = await getUserProfile(req.riderEmail);
+          profiles[req.riderEmail] = profile;
+        })
+      );
+
+      setRequesterProfiles(profiles);
+    };
+
+    if (rideRequests.length > 0) {
+      fetchProfiles();
+    }
+  }, [rideRequests.length]); 
+
 
   return (
     <div className="
@@ -126,58 +153,178 @@ function MyRideCard({
           <div className="flex flex-col gap-2">
             {rideRequests.map((req) => (
               <div
-                key={req.id}
-                className="flex items-center justify-between
-                  bg-gray-50 dark:bg-gray-800
-                  px-4 py-3 rounded-xl
-                  border border-gray-200 dark:border-gray-700"
-              >
-                {/* rider email */}
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate max-w-[55%]">
-                  {req.riderEmail}
-                </p>
-                <OutsiderBadge email={req.riderEmail} />
-                {/* action area */}
-                {req.status === "pending" ? (
-                  <div className="flex gap-2">
+  key={req.id}
+  className="flex flex-col
+    bg-gray-50 dark:bg-gray-800
+    rounded-xl
+    border border-gray-200 dark:border-gray-700
+    overflow-hidden"
+>
+  {/* MAIN ROW — clickable */}
+  <div
+    className="flex items-center justify-between px-4 py-3 cursor-pointer"
+    onClick={() => setExpandedReq(expandedReq === req.id ? null : req.id)}
+  >
+    {/* rider info — from Step 2, stays here */}
+    <div className="flex items-center gap-2">
+      
+      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white text-xs overflow-hidden flex-shrink-0">
+        {requesterProfiles[req.riderEmail]?.photoURL ? (
+          <img
+            src={requesterProfiles[req.riderEmail].photoURL}
+            alt="rider"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          requesterProfiles[req.riderEmail]?.name?.[0]?.toUpperCase() || "?"
+        )}
+      </div>
 
-                    {/* Accept */}
-                    <button
-                      onClick={() => handleUpdateRequest(req.id, "accepted", ride)}
-                      disabled={isFull}
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base transition-all ${
-                        isFull
-                          ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
-                          : "bg-green-100 hover:bg-green-200 text-green-600 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400"
-                      }`}
-                    >
-                      ✓
-                    </button>
+      <div className="flex flex-col">
+        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 leading-tight">
+          {requesterProfiles[req.riderEmail]?.name || req.riderEmail}
+        </p>
+        <OutsiderBadge email={req.riderEmail} />
+      </div>
 
-                    {/* Reject */}
-                    <button
-                      onClick={() => handleUpdateRequest(req.id, "rejected", ride)}
-                      className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base
-                        bg-red-100 hover:bg-red-200 text-red-600
-                        dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400
-                        transition-all"
-                    >
-                      ✕
-                    </button>
+    </div>
 
-                  </div>
-                ) : (
-                  // status badge if not pending
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                    req.status === "accepted"
-                      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
-                  }`}>
-                    {req.status}
-                  </span>
-                )}
+    {/* accept/reject or status badge — stays exactly the same */}
+    {req.status === "pending" ? (
+      <div className="flex gap-2">
+        <button
+          onClick={(e) => { e.stopPropagation(); handleUpdateRequest(req.id, "accepted", ride); }}
+          disabled={isFull}
+          className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base transition-all ${
+            isFull
+              ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+              : "bg-green-100 hover:bg-green-200 text-green-600 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400"
+          }`}
+        >
+          ✓
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleUpdateRequest(req.id, "rejected", ride); }}
+          className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base
+            bg-red-100 hover:bg-red-200 text-red-600
+            dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400
+            transition-all"
+        >
+          ✕
+        </button>
+      </div>
+    ) : (
+      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+        req.status === "accepted"
+          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+          : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+      }`}>
+        {req.status}
+      </span>
+    )}
 
-              </div>
+  </div>
+
+  {/* DROPDOWN — shows on click */}
+  {expandedReq === req.id && (
+    <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-2">
+      
+      <div className="flex justify-between">
+        <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Email</span>
+        <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{req.riderEmail}</span>
+      </div>
+
+      <div className="flex justify-between">
+        <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Phone</span>
+        <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+          {requesterProfiles[req.riderEmail]?.phone || "—"}
+        </span>
+      </div>
+
+      <div className="flex justify-between">
+        <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Branch</span>
+        <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+          {requesterProfiles[req.riderEmail]?.branch || "—"}
+        </span>
+      </div>
+
+    </div>
+  )}
+
+</div>
+              // <div
+              //   key={req.id}
+              //   className="flex items-center justify-between
+              //     bg-gray-50 dark:bg-gray-800
+              //     px-4 py-3 rounded-xl
+              //     border border-gray-200 dark:border-gray-700"
+              // >
+              //   {/* rider info */}
+              //   <div className="flex items-center gap-2">
+                  
+              //     {/* PHOTO */}
+              //     <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-white text-xs overflow-hidden flex-shrink-0">
+              //       {requesterProfiles[req.riderEmail]?.photoURL ? (
+              //         <img
+              //           src={requesterProfiles[req.riderEmail].photoURL}
+              //           alt="rider"
+              //           className="w-full h-full object-cover"
+              //         />
+              //       ) : (
+              //         requesterProfiles[req.riderEmail]?.name?.[0]?.toUpperCase() || "?"
+              //       )}
+              //     </div>
+
+              //     {/* NAME + BADGE */}
+              //     <div className="flex flex-col">
+              //       <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 leading-tight">
+              //         {requesterProfiles[req.riderEmail]?.name || req.riderEmail}
+              //       </p>
+              //       <OutsiderBadge email={req.riderEmail} />
+              //     </div>
+
+              //   </div>
+              //   {/* action area */}
+              //   {req.status === "pending" ? (
+              //     <div className="flex gap-2">
+
+              //       {/* Accept */}
+              //       <button
+              //         onClick={() => handleUpdateRequest(req.id, "accepted", ride)}
+              //         disabled={isFull}
+              //         className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base transition-all ${
+              //           isFull
+              //             ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+              //             : "bg-green-100 hover:bg-green-200 text-green-600 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400"
+              //         }`}
+              //       >
+              //         ✓
+              //       </button>
+
+              //       {/* Reject */}
+              //       <button
+              //         onClick={() => handleUpdateRequest(req.id, "rejected", ride)}
+              //         className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base
+              //           bg-red-100 hover:bg-red-200 text-red-600
+              //           dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400
+              //           transition-all"
+              //       >
+              //         ✕
+              //       </button>
+
+              //     </div>
+              //   ) : (
+              //     // status badge if not pending
+              //     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+              //       req.status === "accepted"
+              //         ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+              //         : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+              //     }`}>
+              //       {req.status}
+              //     </span>
+              //   )}
+
+              // </div>
             ))}
           </div>
         </div>

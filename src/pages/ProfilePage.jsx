@@ -15,6 +15,7 @@ function ProfilePage({
   name, setName,
   branch, setBranch,
   handlePhotoUpload,
+  handleSaveProfile,
 }) {
 
   return (
@@ -35,6 +36,8 @@ function ProfilePage({
         name={name} setName={setName}
         branch={branch} setBranch={setBranch}
         handlePhotoUpload={handlePhotoUpload}
+        handleSaveProfile={handleSaveProfile}
+        
       />
     </div>
   );

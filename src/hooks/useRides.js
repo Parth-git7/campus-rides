@@ -71,6 +71,12 @@ const useRides = (user, userProfile) => {
     try {
       if (!user) return;
 
+      if (!userProfile?.phone || !userProfile?.gender) {
+        toast.error("Complete your profile first ");
+        navigate("/profile"); // send them to profile page
+        return;
+      }
+
       if (
         !from || !to || !date || !time ||
         !fare || !seats || !vehicleType ||

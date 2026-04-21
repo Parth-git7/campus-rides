@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { formatDate } from "../utils/utils";
 import OutsiderBadge from '../components/OutsiderBadge';
+import { useState, useEffect } from "react"; // add this
+import { getUserProfile } from "../services/userService"; // add this
 
 function RidePage({ user, rides, requests, handleRequestRide }) {
 
@@ -10,6 +12,20 @@ function RidePage({ user, rides, requests, handleRequestRide }) {
 
   // find the ride from already loaded rides array
   const ride = rides.find((r) => r.id === rideId);
+
+  // store poster's profile
+  const [posterProfile, setPosterProfile] = useState(null);
+
+  useEffect(() => {
+    const fetchPosterProfile = async () => {
+      const profile = await getUserProfile(ride.userEmail);
+      setPosterProfile(profile);
+    };
+
+    if (ride) {
+      fetchPosterProfile();
+    }
+  }, [ride?.userEmail]); // re-fetch only if email changes
 
   // rides might still be loading
   if (!ride) {
@@ -165,6 +181,22 @@ function RidePage({ user, rides, requests, handleRequestRide }) {
                 <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Email</span>
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {ride.userEmail}
+                </span>
+              </div>
+
+              {/* PHONE */}
+              <div className="flex justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+                <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Phone</span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {posterProfile?.phone || "—"}
+                </span>
+              </div>
+
+              {/* GENDER */}
+              <div className="flex justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+                <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Gender</span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {posterProfile?.gender || "—"}
                 </span>
               </div>
 

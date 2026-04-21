@@ -18,7 +18,8 @@ function AuthForm({
   branch,
   setBranch,
   totalRequests,
-  totalRides
+  totalRides,
+  handleSaveProfile: onSaveProfile,
 }) {
 
   // ✔ If user logged in → show profile
@@ -81,28 +82,7 @@ function AuthForm({
 
           {/* DIVIDER */}
           <div className="border-t border-gray-100 dark:border-gray-700 mb-5"></div>
-
-          {/* DETAILS */}
-          <div className="flex flex-col gap-3 mb-6">
-
-            {/* Email */}
-            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
-              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Email</span>
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{user.email}</span>
-            </div>
-
-            {/* Member Since */}
-            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
-              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Member Since</span>
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                {user.metadata?.creationTime
-                  ? new Date(user.metadata.creationTime).toLocaleDateString("default", { month: "long", year: "numeric" })
-                  : "—"}
-              </span>
-            </div>
-
-          </div>
-
+          
           {/* STATS */}
           <div className="grid grid-cols-2 gap-3 mb-6">
 
@@ -125,6 +105,56 @@ function AuthForm({
             </div>
 
           </div>
+
+          {/* DETAILS */}
+          <div className="flex flex-col gap-3 mb-6">
+
+            {/* Email */}
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Email</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{user.email}</span>
+            </div>
+
+            {/* Member Since */}
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Member Since</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {user.metadata?.creationTime
+                  ? new Date(user.metadata.creationTime).toLocaleDateString("default", { month: "long", year: "numeric" })
+                  : "—"}
+              </span>
+            </div>
+
+            {/* Phone */}
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Phone</span>
+              <input
+                type="tel"
+                placeholder="Add phone"
+                defaultValue={userProfile?.phone || ""}
+                onBlur={(e) => onSaveProfile({ phone: e.target.value, gender: userProfile?.gender || "" })}
+                className="text-sm font-semibold text-gray-700 dark:text-gray-300 bg-transparent text-right focus:outline-none"
+              />
+            </div>
+
+            {/* Gender */}
+            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 px-4 py-3 rounded-xl">
+              <span className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Gender</span>
+              <select
+                defaultValue={userProfile?.gender || ""}
+                onChange={(e) => onSaveProfile({ gender: e.target.value, phone: userProfile?.phone || "" })}
+                className="text-sm font-semibold text-gray-700 dark:text-gray-300 bg-transparent text-right focus:outline-none"
+              >
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+          </div>
+
+          
 
           {/* LOGOUT */}
           <button

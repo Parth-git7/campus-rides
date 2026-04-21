@@ -10,6 +10,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { getUserProfile } from "../services/userService";
 import { uploadProfilePhoto, updateUserPhoto } from "../services/userService";
+import { updateUserProfile } from "../services/userService" ;
 import toast from "react-hot-toast";
 
 const useAuth = () => {
@@ -102,6 +103,22 @@ const useAuth = () => {
     }
     };
 
+    // Save phone and gender to Firestore
+    const handleSaveProfile = async ({ phone, gender }) => {
+      try {
+        if (!userProfile?.id) return;
+
+        await updateUserProfile(userProfile.id, { phone, gender });
+
+        // update local state instantly — no need to refetch
+        setUserProfile((prev) => ({ ...prev, phone, gender }));
+
+        toast.success("Profile updated");
+      } catch (error) {
+        toast.error("Failed to update profile");
+      }
+    };
+
   // --- Auto-detect login state on app load ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -132,6 +149,7 @@ const useAuth = () => {
     handleSignup,
     handleLogout,
     handlePhotoUpload,
+    handleSaveProfile,
   };
 
 };
