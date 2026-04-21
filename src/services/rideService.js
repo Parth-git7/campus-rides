@@ -2,8 +2,8 @@
 
 // This file will contain all ride-related logic
 import { db } from "../firebase";
-import { doc, collection, addDoc , updateDoc, deleteDoc, runTransaction, getDocs, query, where, onSnapshot} from "firebase/firestore";
-
+import { doc, collection, addDoc , updateDoc, deleteDoc, runTransaction, query, where, onSnapshot} from "firebase/firestore";
+// import { doc, collection, addDoc, updateDoc, deleteDoc, runTransaction, query, where, onSnapshot } from "firebase/firestore";
 // export const testService = () => {
 // //   alert("Service working"); // force visible output
 //   console.log("Service layer working ");

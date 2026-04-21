@@ -25,7 +25,7 @@ function RidePage({ user, rides, requests, handleRequestRide }) {
     if (ride) {
       fetchPosterProfile();
     }
-  }, [ride?.userEmail]); // re-fetch only if email changes
+  }, [ride]); // re-fetch only if email changes
 
   // rides might still be loading
   if (!ride) {
